@@ -1,0 +1,30 @@
+hw.bin:     file format binary
+
+00000000 <.data>:
+mov    $0xe,%ah
+mov    $0x48,%al
+int    $0x10
+mov    $0x65,%al
+int    $0x10
+mov    $0x6c,%al
+int    $0x10
+mov    $0x6c,%al
+int    $0x10
+mov    $0x6f,%al
+int    $0x10
+mov    $0x20,%al
+int    $0x10
+mov    $0x57,%al
+int    $0x10
+mov    $0x6f,%al
+int    $0x10
+mov    $0x72,%al
+int    $0x10
+mov    $0x6c,%al
+int    $0x10
+mov    $0x64,%al
+int    $0x10
+hlt    
+jmp    0x2e
+
+1fd:	00 55 aa             	add    %dl,-0x56(%di)
