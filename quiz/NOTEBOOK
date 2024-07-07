@@ -1,0 +1,80 @@
+* Questão 1
+
++----------+-------------------------------+
+| Execução |            Saída              |
++----------+-------------------------------+
+|     1    | Main's ddress: 0x55946dea3149 |
+|     2    | Main's ddress: 0x55a7a47ad149 |
+|     3    | Main's ddress: 0x555839499149 |
+|     4    | Main's ddress: 0x561f30ada149 |
+|     5    | Main's ddress: 0x556b251dc149 |
++----------+-------------------------------+
+
+Os endereços da função `main` se alteraram nas diferentes execuções por conta da randomização de endereços feita pelo sistema operacional. Esse recurso torna difícil que um atacante preveja o layout de memória de um processo.
+
+
+* Questão 2
+
+> Primeira execução do código original: 
+    $ Enter password: foo
+    $ Access granted.
+
+> Segunda execução do código original:
+    $ Enter password: youshallnotpass
+    $ Access denied
+
+Apesar de o acesso ter sido negado, o programa ainda foi executado sem lançar erros quando uma string de tamanho maior que o permitido foi passada na entrada. Isso ocorreu por conta da estrutura do programa e das flags de compilação utilizadas.
+
+Sobre modificações que poderiam deixar o programa mais robusto, a variável `verified` poderia ser atribuída como resultado da chamada da `strcmp`. Isso faria com que, ao usar o valor retornado pela `strcmp`, o smash da pilha fosse detectado.
+
+> Primeira execução do código alterado:
+    $ Enter password: foo
+    $ Access granted
+
+> Segunda execução do código alterado:
+    $ Enter password: youshallnotpass
+    $ Access denied.
+      *** stack smashing detected ***: terminated
+      Aborted (core dumped)
+
+
+* Questão 3
+
+a) A função chamadora foo passa o parâmetro por meio da pilha antes da chamada da função bar. Essa é a convenção de chamada padrão adotada pela arquitetura x86 e ABI.
+
+b) A função bar retorna o valor de retorno por meio do armazenamento do retorno no registrador %eax. Isso também é alinhado à convenção de chamada adotada mencionada no item a).
+
+c) As 2 primeiras e últimas instruções servem para, respectivamente, inicializar uma configuração do stack frame e restaurar a configuração anterior. As funções são importantes para gerenciamento/organização da stack, de forma a permitir a convenção adotada mencionada nos itens anteriores.
+
+d) As intruções sub permitem alocação de espaço na pilha para variáveis locais que são temporariamente armazenadas. Já a instrução da main serve para o alinhamento da stack. As instruções refletem as convenções da ABI do X86.
+
+e) Ao alterar o tipo de retorno para char, foi adicionada a intrução movsbl para %eax, com o intuito de "converter" o retorno para inteiro. Nesse sentido, a declaração antes da main é útil para permitir esse tipo de otimização.
+
+
+* Questão 4
+
+a) Todos os programas imprimiram "foo".
+
+b) Os programas o mesmo tamanho aproximado de 15Kb.
+
+c) TODO.
+
+d) TODO.
+
+e) Comparação de cenários:
+
+> Instalação em Outros Hosts
+
+- Bibliotecas Estáticas: Simplificação de dependências, pois há dependências externas.
+- Bibliotecas Dinâmicas: Pode ser mais complicado devido à necessidade de garantir que todas as bibliotecas dinâmicas estejam presentes no host.
+
+> Atualização da Biblioteca
+
+- Bibliotecas Estáticas: Requer recompilação e redistribuição de todos os executáveis.
+- Bibliotecas Dinâmicas: Apenas a biblioteca precisa ser atualizada, facilitando a manutenção.
+
+> Uso por Muitos Programas no Mesmo Host:
+- Bibliotecas Estáticas: Cada programa terá sua própria cópia da biblioteca, aumentando o uso de espaço em disco.
+- Bibliotecas Dinâmicas: A biblioteca é compartilhada entre os programas, economizando espaço em disco e memória.
+
+Em resumo, bibliotecas estáticas facilitam as dependências mas aumentam o espeço em disco e dificultam a manutenção; e as bibliotecas dinâmicas reduzem o espaço e facilitam a manutenção, mas geram dependências entre hosts.

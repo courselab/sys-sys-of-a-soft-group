@@ -1,0 +1,13 @@
+Para resolver o exercício, primeiramente utilizamos o comando `objdump` para acessar as funções dos arquivos de interesse:
+
+$ objdump -d libcry.so > libcry_disassembly.txt
+$ objdump -d decode > decode_disassembly.txt
+
+Ao analisar o código gerado pelo `objdump` no arquivo objeto `decode`, encontramos uma chamada para a função `strcmp`. Isso nos fez pensar que o `decode` provavelmente utilizava essa função para comparar a entrada do usuário com o token esperado.
+
+Com isso em mente, escrevemos um script substituindo a função `strcmp` para que sempre retornasse 0 (indicando que as strings são iguais). Em seguida, compilamos o script em uma biblioteca dinâmica e a carregamos na execução do `decode` utilizando os comandos abaixo:
+
+$ gcc -m32 -shared -fPIC -o malicious_lib.so malicious_lib.c -ldl
+$ LD_PRELOAD=./malicious_lib.so ./decode secret.cry
+
+Ao executar o código com a biblioteca maliciosa, o programa exibiu a mensagem secreta, que era um link do drive para a música tema de Missão Impossível, quando a senha "asdf" (poderia ser qualquer outra senha) foi digitada.
